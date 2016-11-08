@@ -4,7 +4,7 @@
 # HaveTheyBeenPwned, bulk HaveIBeenPwned scraper, this script is a modifcation of https://github.com/Techno-Hwizrdry/checkpwnedemails
 ##
 __author__  = "Chris Burton"
-__version__ = "1.1"
+__version__ = "1.2"
 
 from argparse import ArgumentParser
 from time     import sleep
@@ -42,7 +42,9 @@ def get_args():
 	parser = PwnedArgParser()
 
 	parser.add_argument('-i', dest='input_path',   help='Path to text file that lists email addresses.')
-	parser.add_argument('-o', dest='output_path',  help='Path to output (tab deliminated) text file.')
+	parser.add_argument('-o', dest='output_path',  help='Path to output to text file.')
+	parser.add_argument('-oR', dest='output_path_report',  help='Path to output to text file in report ready format.')
+	parser.add_argument('-s', dest='rate_limit_sleep',  help='Obey the rate limit of the API.')
 
 	if len(sys.argv) == 1:  # If no arguments were provided, then print help and exit.
 		parser.print_help()
@@ -65,7 +67,6 @@ def get_results(email_list, service, opts):
                 	response = urllib2.urlopen(req)  # This is a json object.
                         data     = json.loads(response.read())
 			results.append( (email, True, data) )
-
                 except urllib2.HTTPError as e:
                         if e.code == 400:
 				print "%s does not appear to be a valid email address.  HTTP Error 400." % (email)
@@ -74,10 +75,11 @@ def get_results(email_list, service, opts):
                         if e.code == 404:
 				results.append( (email, False, data) )
 			if e.code == 429:
-				print "Too many requests; going over the request rate limit, sleeping for 1.5 seconds."
-				sleep (1.5)
+				print "Too many requests; going over the request rate limit, sleeping for 1.6 seconds."
+				sleep (1.6)
 
-		sleep(0.2)  # This 0.2 second delay is for rate limiting.
+		if opts.rate_limit_sleep:
+			sleep(float(opts.rate_limit_sleep))
 
 		#if not opts.output_path:
 		try:
@@ -94,14 +96,22 @@ def get_results(email_list, service, opts):
 				sys.stdout.write(('%s (' % (email)))
 				for i in data:
 					found_email.append( i['Title'] )
-				for line in found_email:
-					sys.stdout.write(line + ", ")
-				else:
-					pass
+
+				sys.stdout.write(','.join(found_email))
 				sys.stdout.write(')')
+				outputString = (('%s' %email + ' (' + ','.join(found_email) + ')\r'))
 				sys.stdout.flush()
-				last_item = 0
 				print ''
+
+				if opts.output_path:
+					with open(opts.output_path, "a") as outputFile:
+						outputFile.write(outputString)
+
+				if opts.output_path_report:
+					with open(opts.output_path_report, "a") as outputFile:
+						outputFile.write("- "+ outputString)
+
+
 		except IndexError:
 			pass
 
@@ -114,6 +124,7 @@ def file_len(fname):
 			pass
 	total_time = 1.6 * ii / 60
 	print ('[+] ' + fname + ' will take approx ' + str(total_time) + ' minutes.')
+
 #  This function will convert every item, in dlist, into a string and
 #  encode any unicode strings into an 8-bit string.
 def clean_and_encode(dlist):
@@ -128,7 +139,7 @@ def clean_and_encode(dlist):
 	return cleaned_list
 
 def write_results_to_file(filename, results, opts):
-	print "file write"
+	pass
 
 def main():
 	email_list = []
@@ -140,6 +151,10 @@ def main():
 
 	email_list_file.close()
 
+	if opts.output_path:
+		print "[+] Saving to file " + str(opts.output_path)
+	if opts.output_path_report:
+		print "[+] Saving to file " + str(opts.output_path_report)
 	if os.path.isfile(opts.input_path):
 		print "[+] Querying HaveIBeenPwned!"
 
@@ -150,7 +165,7 @@ def main():
 
 
 	if opts.output_path:
-		write_results_to_file(opts.output_path, "a", "b")
+		pass
 
 if __name__ == '__main__':
 	main()
