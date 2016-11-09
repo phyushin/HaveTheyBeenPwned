@@ -2,7 +2,7 @@
 Modification of a script, it takes an input file (-i file.txt) containing email addresses and uses the HaveIBeenPwned API.
 
 # Usages Examples
-'''
+```
 ./HaveTheyBeenPwned.py -h
 usage: HaveTheyBeenPwned.py [-h] [-i INPUT_PATH] [-o OUTPUT_PATH]
                             [-oR OUTPUT_PATH_REPORT] [-oX OUTPUT_XML]
@@ -16,7 +16,7 @@ optional arguments:
                         Path to output to text file in report ready format.
   -oX OUTPUT_XML        Path to output to XML file.
   -s RATE_LIMIT_SLEEP   Obey the rate limit of the API.
-'''
+```
 
 Simplest method to seach for all emails in emails.txt and output the results to screen, no rate limit rule but if it hits the rate limit error that entry will be excluded from the results.
 ```
