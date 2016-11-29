@@ -4,7 +4,7 @@
 # HaveTheyBeenPwned, bulk HaveIBeenPwned scraper, this script is a modifcation of https://github.com/Techno-Hwizrdry/checkpwnedemails
 ##
 __author__  = "Chris Burton"
-__version__ = "1.2"
+__version__ = "1.3"
 
 from argparse import ArgumentParser
 from time     import sleep
@@ -44,7 +44,7 @@ def get_args():
 	parser.add_argument('-i', dest='input_path',   help='Path to text file that lists email addresses.')
 	parser.add_argument('-o', dest='output_path',  help='Path to output to text file.')
 	parser.add_argument('-oR', dest='output_path_report',  help='Path to output to text file in report ready format.')
-	parser.add_argument('-s', dest='rate_limit_sleep',  help='Obey the rate limit of the API.')
+	parser.add_argument('-s', dest='rate_limit_sleep',  help='Set a wait time between each request (seconds). Default of 1.6 seconds - set to 0 for no wait.', default=1.6, type=float)
 
 	if len(sys.argv) == 1:  # If no arguments were provided, then print help and exit.
 		parser.print_help()
@@ -117,12 +117,12 @@ def get_results(email_list, service, opts):
 
 	return results
 
-def file_len(fname):
+def file_len(fname,sleeptime):
 	with open(fname) as f:
 		for ii, l in enumerate(f):
 			ii + 1
 			pass
-	total_time = 1.6 * ii / 60
+	total_time = sleeptime * ii / 60
 	print ('[+] ' + fname + ' will take approx ' + str(total_time) + ' minutes.')
 
 #  This function will convert every item, in dlist, into a string and
@@ -145,7 +145,7 @@ def main():
 	email_list = []
 	opts = get_args()
 
-	file_len(opts.input_path)
+	file_len(opts.input_path,opts.rate_limit_sleep)
 	email_list_file = open(opts.input_path, 'r')
 	email_list      = clean_list(email_list_file.readlines())
 
