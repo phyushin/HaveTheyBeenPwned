@@ -99,7 +99,7 @@ def get_results(email_list, service, opts):
 
 				sys.stdout.write(','.join(found_email))
 				sys.stdout.write(')')
-				outputString = (('%s' %email + ' (' + ','.join(found_email) + ')\r'))
+				outputString = (('%s' %email + ' (' + ', '.join(found_email) + ')\r'))
 				sys.stdout.flush()
 				print ''
 
