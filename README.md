@@ -28,7 +28,7 @@ To search HIBP for all emails in emails.txt and output the results as seen on sc
 ./HaveTheyBeenPwned.py -i emails.txt -o found.txt -s 1.6
 ```
 
-To search HIBP for all eamils in emails.txt and output the results to found.txt prefixing each line with a dash (-), tries one entry from emails.txt evert 1.6 seconds.
+To search HIBP for all emails in emails.txt and output the results to found.txt prefixing each line with a dash (-), tries one entry from emails.txt evert 1.6 seconds.
 ```
 ./HaveTheyBeenPwned.py -i emails.txt -oR found.txt -s 1.6
 ```
